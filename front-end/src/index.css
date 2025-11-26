@@ -1,0 +1,5 @@
+/* Using Tailwind CDN for prototyping — keep this file but empty or add overrides */
+:root {
+  --bg: #000;
+}
+body { background: var(--bg); }
