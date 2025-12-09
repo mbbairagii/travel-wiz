@@ -8,12 +8,13 @@ const itineraryRoutes = require("./routes/itineraries");
 
 const generateRoutes = require("./routes/generate");
 
-
+const chatRoutes = require("./routes/chat.js");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/chat", chatRoutes);
 app.use("/api/generate", generateRoutes);
 
 // Connect to MongoDB

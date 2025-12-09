@@ -4,15 +4,16 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import ItineraryCard from "../components/ItineraryCard";
 import QuickCreateModal from "../components/QuickCreateModal";
+import ChatbotModal from "../components/ChatbotModal"; // <- new
 import { apiFetch } from "../utils/api";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [itineraries, setItineraries] = useState([]);
   const [showQuick, setShowQuick] = useState(false);
+  const [showChat, setShowChat] = useState(false); // new: chatbot modal state
   const [stats, setStats] = useState({ total: 0, upcoming: 0, saved: 0 });
 
-  // put this inside the Dashboard component (replace the old useEffect)
   useEffect(() => {
     let mounted = true;
     async function loadFromApi() {
@@ -21,7 +22,6 @@ export default function Dashboard() {
         const res = await apiFetch("/api/itineraries");
         if (!res.ok) {
           if (res.status === 401) {
-            // not logged in / token expired
             localStorage.removeItem("token");
             window.location.href = "/";
             return;
@@ -32,20 +32,19 @@ export default function Dashboard() {
         const data = await res.json();
         if (!mounted) return;
 
-        // normalize id & shape
-        const normalized = (Array.isArray(data) ? data : (data.itineraries || []))
-          .map(it => ({ ...it, id: it._id || it.id }));
+        const normalized = (Array.isArray(data) ? data : (data.itineraries || [])).map((it) => ({
+          ...it,
+          id: it._id || it.id,
+        }));
 
         setItineraries(normalized);
 
-        // compute stats from returned list (you can adapt)
         const total = normalized.length;
-        const upcoming = normalized.filter(it => it.upcoming).length || 0;
-        const saved = normalized.filter(it => it.saved).length || 0;
+        const upcoming = normalized.filter((it) => it.upcoming).length || 0;
+        const saved = normalized.filter((it) => it.saved).length || 0;
         setStats({ total, upcoming, saved });
       } catch (err) {
         console.error("Failed to fetch itineraries:", err);
-        // keep previous behavior: show empty list message in UI
       } finally {
         if (mounted) setLoading(false);
       }
@@ -57,8 +56,6 @@ export default function Dashboard() {
     };
   }, []);
 
-
-  // inside your Dashboard component
   async function handleCreate(payload) {
     setShowQuick(false);
     try {
@@ -79,15 +76,12 @@ export default function Dashboard() {
       const normalized = { ...it, id: it._id || it.id };
       setItineraries((prev) => [normalized, ...prev]);
       setStats((s) => ({ ...s, total: s.total + 1 }));
-      // navigate to newly created itinerary
       window.location.href = `/itinerary/${normalized.id}`;
     } catch (err) {
       console.error("Generate error:", err);
       alert("Failed to generate itinerary: " + (err.message || ""));
     }
   }
-
-
 
   async function handleDelete(id) {
     if (!confirm("Delete this itinerary?")) return;
@@ -115,7 +109,6 @@ export default function Dashboard() {
   }
 
   function handleRegenerate(id) {
-    // placeholder for regenerate flow
     alert("Regenerating " + id);
   }
 
@@ -133,10 +126,18 @@ export default function Dashboard() {
 
       {/* CONTENT */}
       <div className="relative z-10">
-        <Navbar onCreate={() => setShowQuick(true)} />
+        {/* NOTE: Navbar should accept onCreate and onOpenChat props:
+            <Navbar onCreate={() => setShowQuick(true)} onOpenChat={() => setShowChat(true)} />
+            Update your Navbar component accordingly. */}
+        <Navbar onCreate={() => setShowQuick(true)} onOpenChat={() => setShowChat(true)} />
 
         <main className="max-w-6xl mx-auto px-6 mt-8 relative z-10">
-          <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="mb-8">
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="mb-8"
+          >
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl md:text-4xl font-semibold">Welcome back, Explorer 👋</h1>
@@ -187,7 +188,13 @@ export default function Dashboard() {
               ) : (
                 <div className="grid gap-4">
                   {itineraries.map((it) => (
-                    <ItineraryCard key={it.id} data={it} onView={handleView} onRegenerate={handleRegenerate} onDelete={handleDelete} />
+                    <ItineraryCard
+                      key={it.id}
+                      data={it}
+                      onView={handleView}
+                      onRegenerate={handleRegenerate}
+                      onDelete={handleDelete}
+                    />
                   ))}
                 </div>
               )}
@@ -196,6 +203,9 @@ export default function Dashboard() {
         </main>
 
         <QuickCreateModal open={showQuick} onClose={() => setShowQuick(false)} onCreate={handleCreate} />
+
+        {/* Chatbot modal */}
+        <ChatbotModal open={showChat} onClose={() => setShowChat(false)} />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import "./index.css";
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { apiFetch } from "./utils/api";
+import PhotoStripMaker from "./components/PhotoStripMaker";
 
 export default function LandingAuth({ heading = "Travel made easy for unforgettable days outside" }) {
   const [showLogin, setShowLogin] = useState(false);
@@ -136,93 +137,111 @@ export default function LandingAuth({ heading = "Travel made easy for unforgetta
         </div>
       </div>
 
-      {/* Background video (parallax transforms applied via JS) */}
-      <video
-        ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover object-center will-change-transform"
-        src="/MP1.mp4"
-        poster="/video-poster.jpg"
-        autoPlay
-        loop
-        muted
-        playsInline
-        aria-hidden="true"
-      />
+      {/* ---------- HERO (video scoped to hero only) ---------- */}
+      <main className="relative z-20">
+        {/* Hero wrapper that contains the video and hero content.
+      This wrapper ensures the video is constrained to the hero height. */}
+        <section className="relative min-h-screen overflow-hidden">
+          {/* Background video (parallax transforms applied via JS).
+        Now scoped to this section so it won't cover later sections. */}
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full object-cover object-center will-change-transform -z-10"
+            src="/assets/MP1.mp4"
+            poster="/video-poster.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+          />
 
-      {/* Warm overlay gradient for the cinematic look */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
+          {/* Warm overlay gradient for the cinematic look */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
 
-      {/* Header with centered logo */}
-      <header className="relative z-20 flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
-        {/* center logo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <img src="/MP1.png" alt="TRAVEL-WIZ" className="h-12 w-auto" />
-        </div>
+          {/* Header with centered logo (you can keep header outside hero if you prefer) */}
+          <header className="relative z-10 flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <img src="/MP1.png" alt="TRAVEL-WIZ" className="h-12 w-auto" />
+            </div>
 
-        {/* right actions */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowSignup(true)}
-            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black shadow-sm hover:shadow-md transition"
-          >
-            Sign up
-          </button>
-          <button
-            onClick={() => setShowLogin(true)}
-            className="rounded-full border border-white/40 px-4 py-2 text-sm font-medium text-white hover:bg-white/6 transition"
-          >
-            Login
-          </button>
-        </div>
-      </header>
-
-      {/* Main hero */}
-      <main className="relative z-20 flex items-center justify-center min-h-screen px-6">
-        <div className="mx-auto w-full max-w-5xl py-36 text-center">
-          <motion.div initial="hidden" animate="show" variants={container}>
-            <motion.h1
-              variants={fadeUp}
-              className="font-serif text-4xl sm:text-5xl md:text-7xl leading-tight md:leading-[0.95] text-white drop-shadow-[0_6px_18px_rgba(0,0,0,0.6)]"
-            >
-              {heading}
-            </motion.h1>
-
-            <motion.p variants={fadeUp} className="mt-6 max-w-2xl mx-auto text-lg text-white/85">
-              Instant itineraries, real-time suggestions, and everything you need for your next escape.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="mt-10 flex items-center justify-center gap-4">
-              <motion.a
-                href="#shop1"
-                whileHover={{ scale: 1.03, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-black shadow-lg hover:scale-[1.02] transition-transform"
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowSignup(true)}
+                className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black shadow-sm hover:shadow-md transition"
               >
-                Build Itinerary
-              </motion.a>
-
-              <motion.a
-                href="#shop2"
-                whileHover={{ scale: 1.03, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 rounded-full border border-white px-6 py-3 text-base font-semibold text-white hover:bg-white/6 transition"
+                Sign up
+              </button>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="rounded-full border border-white/40 px-4 py-2 text-sm font-medium text-white hover:bg-white/6 transition"
               >
-                Browse Destinations
-              </motion.a>
-            </motion.div>
+                Login
+              </button>
+            </div>
+          </header>
 
-            {message && (
-              <motion.p variants={fadeUp} className="mt-6 text-center text-sm text-white/90">
-                {message}
-              </motion.p>
-            )}
-          </motion.div>
-        </div>
+          {/* Hero content centered */}
+          <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
+            <div className="mx-auto w-full max-w-5xl py-36 text-center">
+              {/* ... keep your motion div + headings/buttons here unchanged ... */}
+              <motion.div initial="hidden" animate="show" variants={container}>
+                <motion.h1
+                  variants={fadeUp}
+                  className="font-serif text-4xl sm:text-5xl md:text-7xl leading-tight md:leading-[0.95] text-white drop-shadow-[0_6px_18px_rgba(0,0,0,0.6)]"
+                >
+                  {heading}
+                </motion.h1>
+
+                <motion.p variants={fadeUp} className="mt-6 max-w-2xl mx-auto text-lg text-white/85">
+                  Instant itineraries, real-time suggestions, and everything you need for your next escape.
+                </motion.p>
+
+                <motion.button
+                  onClick={() => setShowLogin(true)}
+                  whileHover={{ scale: 1.03, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-black shadow-lg hover:scale-[1.02] transition-transform"
+                >
+                  Build Itinerary
+                </motion.button>
+
+                <motion.button
+                  onClick={() => setShowLogin(true)}
+                  whileHover={{ scale: 1.03, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-white px-6 py-3 text-base font-semibold text-white hover:bg-white/6 transition"
+                >
+                  Browse Destinations
+                </motion.button>
+
+                <br />
+                <br />
+                <br />
+                <motion.p variants={fadeUp} className="mt-6 max-w-2xl mx-auto text-lg text-white/85">
+                  SCROLL DOWN THE PAGE TO EXPLORE OUR NEW PHOTO STRIP MAKER FEATURE 👇
+                </motion.p>
+
+                {message && (
+                  <motion.p variants={fadeUp} className="mt-6 text-center text-sm text-white/90">
+                    {message}
+                  </motion.p>
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </section>
       </main>
 
+
+      {/* --- PHOTO STRIP MAKER SECTION --- */}
+      <section id="shop2" className="relative z-30 py-24 px-6 bg-black/40 backdrop-blur-md">
+        <PhotoStripMaker />
+      </section>
+
+
       {/* Footer small */}
-      <footer className="absolute bottom-6 left-0 right-0 z-20 text-center text-white/70 text-sm">
-        © 2025 TRAVEL-WIZ — Smart itineraries for modern explorers. BUILT WITH ❤️ .
+      <footer className="relative z-20 mt-20 text-center text-white/70 text-sm">
       </footer>
 
       {/* Login Modal */}
